@@ -1,5 +1,7 @@
 # AI Growth Engine
 
+[Demo video (1080p)](docs/video/ai-growth-engine-1080p.mp4)
+
 Operating system for the growth seat at a stealth consumer AI company launching in 2027. It is built to run on data you connect: ad accounts, analytics, a model, email, SMS, and Stripe. With no keys, it still does real work from public sources and from a first-party tracking endpoint.
 
 Built by [Harry Malhi](https://github.com/Harry0052).
