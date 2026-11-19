@@ -36,6 +36,7 @@ import {
   writeMemo,
 } from "@/lib/services/ops";
 import { deliver } from "@/lib/services/messages";
+import { generateText } from "@/lib/integrations";
 
 async function actor() {
   const user = await currentUser();
@@ -181,6 +182,21 @@ export async function approveOutboxAction(id: string) {
   revalidatePath("/lifecycle");
   revalidatePath("/support");
   return result;
+}
+
+export async function draftTicketAction(ticketId: string) {
+  const user = await actor();
+  const ticket = await import("@/lib/repo").then((repo) => repo.getTicket(ticketId));
+  if (!ticket) return { ok: false as const, error: "Ticket not found." };
+  const messages = await import("@/lib/repo").then((repo) => repo.ticketMessages(ticketId));
+  const prompt = `Draft a short reply to this support ticket. Do not promise refunds, features, or timelines that are not in the ticket. If you do not know, say a human will confirm.\n\n${messages.map((message) => `${message.direction}: ${message.body}`).join("\n")}`;
+  const result = await generateText(prompt);
+  await addAudit(user.email, result.ok ? "support.draft" : "support.draft_unavailable", ticketId, {
+    model: result.ok ? result.model : "",
+    error: result.ok ? "" : result.error,
+  });
+  if (!result.ok) return result;
+  return { ok: true as const, text: result.text, message: `Draft from ${result.provider} / ${result.model}. Nothing has been sent.` };
 }
 
 export async function replyTicketAction(ticketId: string, body: string, send: boolean) {

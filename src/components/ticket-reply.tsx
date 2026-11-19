@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { replyTicketAction } from "@/server/actions";
+import { draftTicketAction, replyTicketAction } from "@/server/actions";
 
 export function TicketReply({ ticketId, channel }: { ticketId: string; channel: string }) {
   const router = useRouter();
@@ -12,6 +12,16 @@ export function TicketReply({ ticketId, channel }: { ticketId: string; channel: 
     <div className="grid gap-2">
       <textarea value={body} onChange={(event) => setBody(event.target.value)} placeholder="Write the reply a human is approving." className="min-h-28 rounded-xl border border-line px-3 py-2 text-sm" />
       <div className="flex flex-wrap gap-2">
+        <button
+          className="rounded-full border border-line px-4 py-2 text-sm"
+          onClick={async () => {
+            const result = await draftTicketAction(ticketId);
+            if (result.ok && "text" in result && result.text) setBody(result.text);
+            setMessage(result.ok ? result.message || "Draft ready. Edit it before sending." : result.error);
+          }}
+        >
+          Draft with model
+        </button>
         <button
           className="rounded-full border border-line px-4 py-2 text-sm"
           onClick={async () => {
