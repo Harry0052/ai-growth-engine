@@ -1,4 +1,4 @@
-# Growth Engine
+# AI Growth Engine
 
 Operating system for the growth seat at a stealth consumer AI company launching in 2027. It is built to run on data you connect: ad accounts, analytics, a model, email, SMS, and Stripe. With no keys, it still does real work from public sources and from a first-party tracking endpoint.
 
